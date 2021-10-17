@@ -98,6 +98,8 @@
   hosts: all
   become: yes
   become_user: "{{ devel_user }}"
+  vars:
+    capi_version: v1.0.99
 
   tasks:
     - name: Copy cluster-api clusterctl-settings.json
@@ -126,11 +128,11 @@
     - name: Copy kubemark cluster template
       ansible.builtin.copy:
         src: "$HOME/cluster-api-provider-kubemark/templates/cluster-template.yaml"
-        dest: "$HOME/.cluster-api/dev-repository/infrastructure-kubemark/v1.0.99/"
+        dest: "$HOME/.cluster-api/dev-repository/infrastructure-kubemark/{{ capi_version }}/"
         remote_src: yes
 
     - name: Copy kubemark capd flavor cluster template
       ansible.builtin.copy:
         src: "$HOME/cluster-api-provider-kubemark/templates/cluster-template-capd.yaml"
-        dest: "$HOME/.cluster-api/dev-repository/infrastructure-kubemark/v1.0.99/"
+        dest: "$HOME/.cluster-api/dev-repository/infrastructure-kubemark/{{ capi_version }}/"
         remote_src: yes
