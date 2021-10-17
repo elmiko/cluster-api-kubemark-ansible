@@ -1,6 +1,25 @@
 ---
+- name: Update system
+  hosts: all
+  become: yes
+  become_method: sudo
+  become_user: root
+
+  tasks:
+    - name: Update cache and all packages
+      ansible.builtin.apt:
+        pkg: "*"
+        state: latest
+        update_cache: yes
+
+    - name: Install python3-docker from apt
+      ansible.builtin.apt:
+        pkg: python3-docker
+        state: present
+
 - name: Add tools for building code
   hosts: all
+  become: yes
   become_method: sudo
   become_user: root
 
@@ -20,6 +39,7 @@
 
 - name: Configure docker for devel user
   hosts: all
+  become: yes
   become_method: sudo
   become_user: root
 
@@ -37,6 +57,7 @@
 
 - name: Add Kubernetes related tools
   hosts: all
+  become: yes
   become_user: "{{ devel_user }}"
 
   tasks:
@@ -52,7 +73,7 @@
         return_content: yes
       register: kubectl_version
 
-    - name: "Download version {{ kubectl_version.content }} kubectl"
+    - name: "Download kubectl version {{ kubectl_version.content }}"
       ansible.builtin.get_url:
         url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
         dest: "$HOME/bin/kubectl"
@@ -83,6 +104,7 @@
 
 - name: Checkout Cluster API repositories
   hosts: all
+  become: yes
   become_user: "{{ devel_user }}"
 
   tasks:
@@ -99,4 +121,36 @@
         dest: "$HOME/cluster-api-provider-kubemark"
         version: "{{ provider_kubemark_version }}"
         depth: 1
+
+- name: Configure localhost kind docker registry
+  hosts: all
+  become: yes
+  become_user: "{{ devel_user }}"
+  vars:
+    reg_name: kind-registry
+    reg_port: "5000"
+
+  tasks:
+    - name: Create kind network
+      community.docker.docker_network:
+        name: kind
+
+    - name: "Create {{ reg_name }} network"
+      community.docker.docker_network:
+        name: "{{ reg_name }}"
+
+    - name: "Create {{ reg_name }} container"
+      community.docker.docker_container:
+        name: "{{ reg_name }}"
+        image: docker.io/library/registry:2
+        state: started
+        restart_policy: always
+        ports:
+          - "127.0.0.1:{{ reg_port }}:5000"
+        detach: yes
+        networks:
+          - name: kind
+          - name: "{{ reg_name }}"
+
+
 
