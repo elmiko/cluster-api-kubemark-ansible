@@ -1,0 +1,18 @@
+---
+- name: Build cluster-api
+  hosts: all
+  become: yes
+  become_user: "{{ devel_user }}"
+
+  tasks:
+    - name: Build clusterctl
+      ansible.builtin.shell: make clusterctl
+      args:
+        chdir: "$HOME/cluster-api"
+        creates: "$HOME/cluster-api/bin/clusterctl"
+
+    - name: Create symlink to clusterctl
+      ansible.builtin.file:
+        src: "$HOME/cluster-api/bin/clusterctl"
+        dest: "$HOME/bin/clusterctl"
+        state: link
