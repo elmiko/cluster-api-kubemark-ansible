@@ -59,3 +59,16 @@
         dest: "/home/{{ devel_user }}/bin/kubectl"
         mode: u+x
 
+    - name: Get GOOS setting
+      ansible.builtin.shell: go env GOOS
+      register: go_goos
+
+    - name: Get GOARCH setting
+      ansible.builtin.shell: go env GOARCH
+      register: go_goarch
+
+    - name: Download latest kubebuilder
+      ansible.builtin.get_url:
+        url: "https://go.kubebuilder.io/dl/latest/{{ go_goos.stdout }}/{{ go_goarch.stdout }}"
+        dest: "/home/{{ devel_user }}/bin/kubebuilder"
+        mode: u+x
