@@ -81,3 +81,22 @@
     - name: Add go bin to path
       ansible.builtin.shell: echo "if [ -d \"$HOME/go/bin\" ]; then PATH=\"$HOME/go/bin:$PATH\"; fi" >> "$HOME/.profile"
 
+- name: Checkout Cluster API repositories
+  hosts: all
+  become_user: "{{ devel_user }}"
+
+  tasks:
+    - name: "cluster-api @ {{ cluster_api_version }}"
+      ansible.builtin.git:
+        repo: "https://github.com/kubernetes-sigs/cluster-api.git"
+        dest: "$HOME/cluster-api"
+        version: "{{ cluster_api_version }}"
+        depth: 1
+
+    - name: "cluster-api-provider-kubemark @ {{ provider_kubemark_version }}"
+      ansible.builtin.git:
+        repo: "https://github.com/kubernetes-sigs/cluster-api-provider-kubemark.git"
+        dest: "$HOME/cluster-api-provider-kubemark"
+        version: "{{ provider_kubemark_version }}"
+        depth: 1
+

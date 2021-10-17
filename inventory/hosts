@@ -3,3 +3,5 @@ all:
     localhost:
   vars:
     devel_user: capi
+    cluster_api_version: main
+    provider_kubemark_version: main
