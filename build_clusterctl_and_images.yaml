@@ -75,6 +75,17 @@
       args:
         chdir: "$HOME/cluster-api-provider-kubemark"
 
+    - name: Build infrastructure-components.yaml
+      ansible.builtin.shell: make release-manifests
+      args:
+        chdir: "$HOME/cluster-api-provider-kubemark"
+
+    - name: Copy infrastructure-components.yaml
+      ansible.builtin.copy:
+        src: "$HOME/cluster-api-provider-kubemark/out/infrastructure-components.yaml"
+        dest: "$HOME/cluster-api-provider-kubemark/infrastructure-components.yaml"
+        remote_src: yes
+
     - name: Push cluster-api-kubemark-controller controller image
       community.docker.docker_image:
         name: "{{ registry_spec }}/cluster-api-kubemark-controller-amd64"
@@ -82,3 +93,32 @@
         repository: "{{ registry_spec }}/cluster-api-kubemark-controller-amd64"
         source: local
         push: yes
+
+- name: Configure clusterctl
+  hosts: all
+  become: yes
+  become_user: "{{ devel_user }}"
+
+  tasks:
+    - name: Copy cluster-api clusterctl-settings.json
+      ansible.builtin.copy:
+        src: files/cluster-api-clusterctl-settings.json
+        dest: "$HOME/cluster-api/clusterctl-settings.json"
+        owner: "{{ devel_user }}"
+        group: "{{ devel_user }}"
+        mode: "0644"
+
+    - name: Copy kubemark provider clusterctl-settings.json
+      ansible.builtin.copy:
+        src: files/kubemark-clusterctl-settings.json
+        dest: "$HOME/cluster-api-provider-kubemark/clusterctl-settings.json"
+        owner: "{{ devel_user }}"
+        group: "{{ devel_user }}"
+        mode: "0644"
+
+    - name: Create local cluster-api config
+      ansible.builtin.shell: |
+        export PATH="$HOME/go/bin:$PATH"
+        python3 cmd/clusterctl/hack/create-local-repository.py
+      args:
+        chdir: "$HOME/cluster-api"

@@ -1,0 +1,4 @@
+{
+    "providers": ["cluster-api", "bootstrap-kubeadm", "control-plane-kubeadm", "infrastructure-docker", "infrastructure-kubemark"],
+    "provider_repos": ["../cluster-api-provider-kubemark"]
+}

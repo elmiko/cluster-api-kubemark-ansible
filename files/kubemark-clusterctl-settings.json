@@ -1,0 +1,8 @@
+{
+    "name": "infrastructure-kubemark",
+    "config": {
+        "componentsFile": "infrastructure-components.yaml",
+        "nextVersion": "v1.0.99",
+        "type": "InfrastructureProvider"
+    }
+}
