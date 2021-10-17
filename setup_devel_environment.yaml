@@ -36,3 +36,26 @@
         name: "{{ devel_user }}"
         groups: docker
         append: yes
+
+- name: Add Kubernetes related tools
+  hosts: all
+
+  tasks:
+    - name: Make local bin directory
+      ansible.builtin.file:
+        path: "/home/{{ devel_user }}/bin"
+        state: directory
+        mode: "0755"
+
+    - name: Get kubectl version
+      ansible.builtin.uri:
+        url: https://dl.k8s.io/release/stable.txt
+        return_content: yes
+      register: kubectl_version
+
+    - name: "Download version {{ kubectl_version.content }} kubectl"
+      ansible.builtin.get_url:
+        url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
+        dest: "/home/{{ devel_user }}/bin/kubectl"
+        mode: u+x
+
