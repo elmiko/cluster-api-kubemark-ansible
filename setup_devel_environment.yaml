@@ -1,7 +1,9 @@
 ---
 - name: Add tools for building code
   hosts: all
-  remote_user: root
+  become: yes
+  become_method: sudo
+  become_user: root
 
   tasks:
     - name: Install make and gcc from apt
@@ -10,9 +12,27 @@
           - make
           - gcc
         state: present
+
     - name: Install go language from snap
       community.general.snap:
         name: go
         classic: yes
         state: present
 
+- name: Configure docker for devel user
+  hosts: all
+  become: yes
+  become_method: sudo
+  become_user: root
+
+  tasks:
+    - name: Install docker.io from apt
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+
+    - name: Add "{{ devel_user }}" to docker group
+      ansible.builtin.user:
+        name: "{{ devel_user }}"
+        groups: docker
+        append: yes
