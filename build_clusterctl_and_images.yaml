@@ -122,3 +122,15 @@
         python3 cmd/clusterctl/hack/create-local-repository.py
       args:
         chdir: "$HOME/cluster-api"
+
+    - name: Copy kubemark cluster template
+      ansible.builtin.copy:
+        src: "$HOME/cluster-api-provider-kubemark/templates/cluster-template.yaml"
+        dest: "$HOME/.cluster-api/dev-repository/infrastructure-kubemark/v1.0.99/"
+        remote_src: yes
+
+    - name: Copy kubemark capd flavor cluster template
+      ansible.builtin.copy:
+        src: "$HOME/cluster-api-provider-kubemark/templates/cluster-template-capd.yaml"
+        dest: "$HOME/.cluster-api/dev-repository/infrastructure-kubemark/v1.0.99/"
+        remote_src: yes
