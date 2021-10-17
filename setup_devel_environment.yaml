@@ -1,7 +1,6 @@
 ---
 - name: Add tools for building code
   hosts: all
-  become: yes
   become_method: sudo
   become_user: root
 
@@ -21,7 +20,6 @@
 
 - name: Configure docker for devel user
   hosts: all
-  become: yes
   become_method: sudo
   become_user: root
 
@@ -39,11 +37,12 @@
 
 - name: Add Kubernetes related tools
   hosts: all
+  become_user: "{{ devel_user }}"
 
   tasks:
     - name: Make local bin directory
       ansible.builtin.file:
-        path: "/home/{{ devel_user }}/bin"
+        path: "$HOME/bin"
         state: directory
         mode: "0755"
 
@@ -56,7 +55,7 @@
     - name: "Download version {{ kubectl_version.content }} kubectl"
       ansible.builtin.get_url:
         url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
-        dest: "/home/{{ devel_user }}/bin/kubectl"
+        dest: "$HOME/bin/kubectl"
         mode: u+x
 
     - name: Get GOOS setting
@@ -70,5 +69,15 @@
     - name: Download latest kubebuilder
       ansible.builtin.get_url:
         url: "https://go.kubebuilder.io/dl/latest/{{ go_goos.stdout }}/{{ go_goarch.stdout }}"
-        dest: "/home/{{ devel_user }}/bin/kubebuilder"
+        dest: "$HOME/bin/kubebuilder"
         mode: u+x
+
+    - name: Download kustomize v3 using go get
+      ansible.builtin.shell: go get sigs.k8s.io/kustomize/kustomize/v3
+
+    - name: Download latest kind using go get
+      ansible.builtin.shell: go get sigs.k8s.io/kind
+
+    - name: Add go bin to path
+      ansible.builtin.shell: echo "if [ -d \"$HOME/go/bin\" ]; then PATH=\"$HOME/go/bin:$PATH\"; fi" >> "$HOME/.profile"
+
