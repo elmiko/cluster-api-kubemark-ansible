@@ -3,6 +3,9 @@
   hosts: all
   become: yes
   become_user: "{{ devel_user }}"
+  vars:
+    registry_spec: localhost:5000
+    pull_policy: Always
 
   tasks:
     - name: Build clusterctl
@@ -16,3 +19,46 @@
         src: "$HOME/cluster-api/bin/clusterctl"
         dest: "$HOME/bin/clusterctl"
         state: link
+
+    - name: Build cluster-api controllers
+      ansible.builtin.shell: "make docker-build REGISTRY={{ registry_spec }} PULL_POLICY={{ pull_policy }}"
+      args:
+        chdir: "$HOME/cluster-api"
+
+    - name: Build cluster-api-provider-docker controllers
+      ansible.builtin.shell: "make -C test/infrastructure/docker docker-build REGISTRY={{ registry_spec }} PULL_POLICY={{ pull_policy }}"
+      args:
+        chdir: "$HOME/cluster-api"
+
+    - name: Push cluster-api controller image
+      community.docker.docker_image:
+        name: "{{ registry_spec }}/cluster-api-controller-amd64"
+        tag: dev
+        repository: "{{ registry_spec }}/cluster-api-controller-amd64"
+        source: local
+        push: yes
+
+    - name: Push kubeadm-bootstrap controller image
+      community.docker.docker_image:
+        name: "{{ registry_spec }}/kubeadm-bootstrap-controller-amd64"
+        tag: dev
+        repository: "{{ registry_spec }}/kubeadm-bootstrap-controller-amd64"
+        source: local
+        push: yes
+
+    - name: Push kubeadm-control-plane controller image
+      community.docker.docker_image:
+        name: "{{ registry_spec }}/kubeadm-control-plane-controller-amd64"
+        tag: dev
+        repository: "{{ registry_spec }}/kubeadm-control-plane-controller-amd64"
+        source: local
+        push: yes
+
+    - name: Push capd-manager controller image
+      community.docker.docker_image:
+        name: "{{ registry_spec }}/capd-manager-amd64"
+        tag: dev
+        repository: "{{ registry_spec }}/capd-manager-amd64"
+        source: local
+        push: yes
+
