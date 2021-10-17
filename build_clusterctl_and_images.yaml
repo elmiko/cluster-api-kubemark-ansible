@@ -1,5 +1,5 @@
 ---
-- name: Build cluster-api
+- name: Build Cluster API
   hosts: all
   become: yes
   become_user: "{{ devel_user }}"
@@ -62,3 +62,23 @@
         source: local
         push: yes
 
+- name: Build Cluster API Kubemark provider
+  hosts: all
+  become: yes
+  become_user: "{{ devel_user }}"
+  vars:
+    registry_spec: localhost:5000
+
+  tasks:
+    - name: Build cluster-api-provider-kubemark controllers
+      ansible.builtin.shell: "make docker-build REGISTRY={{ registry_spec }}"
+      args:
+        chdir: "$HOME/cluster-api-provider-kubemark"
+
+    - name: Push cluster-api-kubemark-controller controller image
+      community.docker.docker_image:
+        name: "{{ registry_spec }}/cluster-api-kubemark-controller-amd64"
+        tag: dev
+        repository: "{{ registry_spec }}/cluster-api-kubemark-controller-amd64"
+        source: local
+        push: yes
