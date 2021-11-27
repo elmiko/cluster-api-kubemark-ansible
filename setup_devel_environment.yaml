@@ -104,14 +104,14 @@
   tasks:
     - name: "cluster-api @ {{ cluster_api_version }}"
       ansible.builtin.git:
-        repo: "https://github.com/kubernetes-sigs/cluster-api.git"
+        repo: "{{ cluster_api_repo }}"
         dest: "$HOME/cluster-api"
         version: "{{ cluster_api_version }}"
         depth: 1
 
     - name: "cluster-api-provider-kubemark @ {{ provider_kubemark_version }}"
       ansible.builtin.git:
-        repo: "https://github.com/kubernetes-sigs/cluster-api-provider-kubemark.git"
+        repo: "{{ provider_kubemark_repo }}"
         dest: "$HOME/cluster-api-provider-kubemark"
         version: "{{ provider_kubemark_version }}"
         depth: 1
