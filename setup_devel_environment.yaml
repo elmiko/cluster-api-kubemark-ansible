@@ -87,11 +87,17 @@
         dest: "$HOME/bin/kubebuilder"
         mode: u+x
 
-    - name: Download kustomize v3 using go get
-      ansible.builtin.shell: go get sigs.k8s.io/kustomize/kustomize/v3
+    - name: Download kustomize installer script
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
+        dest: "$HOME/bin/install_kustomize.sh"
+        mode: u+x
 
-    - name: Download latest kind using go get
-      ansible.builtin.shell: go get sigs.k8s.io/kind
+    - name: Run kustomize installer script
+      ansible.builtin.shell: $HOME/bin/install_kustomize.sh $HOME/go/bin
+
+    - name: Download latest kind using go install
+      ansible.builtin.shell: go install sigs.k8s.io/kind@latest
 
     - name: Add go bin to path
       ansible.builtin.shell: echo "if [ -d \"\$HOME/go/bin\" ]; then PATH=\"\$HOME/go/bin:\$PATH\"; fi" >> "$HOME/.profile"

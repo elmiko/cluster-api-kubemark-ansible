@@ -5,7 +5,7 @@ environment. Including tools to build source code, docker, and kind.
 
 ## Setting up a development host
 
-1. Create an instance, ubuntu 20.10 is recommended
+1. Create an instance, ubuntu 22.04 is recommended
 2. Update `inventory/hosts` if you need to change addresses
 3. Run `ansible-playbook -K -i setup_devel_environment.yaml`
 

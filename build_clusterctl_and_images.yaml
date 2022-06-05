@@ -80,12 +80,6 @@
       args:
         chdir: "$HOME/cluster-api-provider-kubemark"
 
-    - name: Copy infrastructure-components.yaml
-      ansible.builtin.copy:
-        src: "$HOME/cluster-api-provider-kubemark/out/infrastructure-components.yaml"
-        dest: "$HOME/cluster-api-provider-kubemark/infrastructure-components.yaml"
-        remote_src: yes
-
     - name: Push cluster-api-kubemark-controller controller image
       community.docker.docker_image:
         name: "{{ registry_spec }}/cluster-api-kubemark-controller-amd64"
@@ -98,8 +92,6 @@
   hosts: all
   become: yes
   become_user: "{{ devel_user }}"
-  vars:
-    capi_version: v1.0.99
 
   tasks:
     - name: Copy cluster-api clusterctl-settings.json
@@ -112,7 +104,7 @@
 
     - name: Create local cluster-api config
       ansible.builtin.shell: |
-        export PATH="$HOME/go/bin:$PATH"
+        export PATH="$HOME/bin:$HOME/go/bin:$PATH"
         python3 cmd/clusterctl/hack/create-local-repository.py
       args:
         chdir: "$HOME/cluster-api"
