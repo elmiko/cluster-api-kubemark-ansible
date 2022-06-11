@@ -61,6 +61,9 @@
         state: directory
         mode: "0755"
 
+    - name: Add home bin to path
+      ansible.builtin.shell: echo "if [ -d \"\$HOME/bin\" ]; then PATH=\"\$HOME/bin:\$PATH\"; fi" >> "$HOME/.profile"
+
     - name: Get kubectl version
       ansible.builtin.uri:
         url: https://dl.k8s.io/release/stable.txt
@@ -94,13 +97,13 @@
         mode: u+x
 
     - name: Run kustomize installer script
-      ansible.builtin.shell: $HOME/bin/install_kustomize.sh $HOME/go/bin
+      ansible.builtin.shell: $HOME/bin/install_kustomize.sh $HOME/bin
 
-    - name: Download latest kind using go install
-      ansible.builtin.shell: go install sigs.k8s.io/kind@latest
-
-    - name: Add go bin to path
-      ansible.builtin.shell: echo "if [ -d \"\$HOME/go/bin\" ]; then PATH=\"\$HOME/go/bin:\$PATH\"; fi" >> "$HOME/.profile"
+    - name: Download latest kind version
+      ansible.builtin.get_url:
+        url: "https://storage.googleapis.com/k8s-staging-kind/latest/kind-linux-amd64"
+        dest: "$HOME/bin/kind"
+        mode: u+x
 
 - name: Checkout Cluster API repositories
   hosts: all
