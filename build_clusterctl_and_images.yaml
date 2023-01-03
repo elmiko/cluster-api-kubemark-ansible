@@ -26,7 +26,7 @@
         chdir: "$HOME/cluster-api"
 
     - name: Build cluster-api-provider-docker controllers
-      ansible.builtin.shell: "make docker-capd-build REGISTRY={{ registry_spec }} PULL_POLICY={{ pull_policy }}"
+      ansible.builtin.shell: "make docker-build-docker-infrastructure REGISTRY={{ registry_spec }} PULL_POLICY={{ pull_policy }}"
       args:
         chdir: "$HOME/cluster-api"
 
