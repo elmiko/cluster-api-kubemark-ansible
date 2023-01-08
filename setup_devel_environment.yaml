@@ -101,7 +101,7 @@
 
     - name: Download latest kind version
       ansible.builtin.get_url:
-        url: "https://storage.googleapis.com/k8s-staging-kind/latest/kind-linux-amd64"
+        url: "https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64"
         dest: "$HOME/bin/kind"
         mode: u+x
 
