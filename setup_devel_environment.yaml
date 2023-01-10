@@ -99,11 +99,8 @@
     - name: Run kustomize installer script
       ansible.builtin.shell: $HOME/bin/install_kustomize.sh $HOME/bin
 
-    - name: Download latest kind version
-      ansible.builtin.get_url:
-        url: "https://storage.googleapis.com/k8s-staging-kind/latest/kind-linux-amd64"
-        dest: "$HOME/bin/kind"
-        mode: u+x
+    - name: Install kind version 0.17.0
+      ansible.builtin.shell: go install sigs.k8s.io/kind@v0.17.0
 
 - name: Checkout Cluster API repositories
   hosts: all
