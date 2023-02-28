@@ -1,0 +1,8 @@
+default_registry: locahost:5000
+provider_repos:
+- ../cluster-api-provider-kubemark
+enable_providers:
+- kubemark
+- docker
+- kubeadm-bootstrap
+- kubeadm-control-plane

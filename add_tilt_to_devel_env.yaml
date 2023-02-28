@@ -1,0 +1,47 @@
+---
+- name: Download Tilt
+  hosts: all
+  become: yes
+  become_user: "{{ devel_user }}"
+
+  tasks:
+    - name: "Download Tilt installer"
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh"
+        dest: "/tmp/tilt-install.sh"
+        mode: u+r
+
+- name: Install Tilt
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: "Run Tilt installer"
+      ansible.builtin.shell: bash /tmp/tilt-install.sh
+
+- name: Cleanup Tilt Install
+  hosts: all
+  become: yes
+  become_user: "{{ devel_user }}"
+
+  tasks:
+    - name: "Delete Tilt installer"
+      ansible.builtin.file:
+        path: /tmp/tilt-install.sh
+        state: absent
+
+- name: Configure Tilt
+  hosts: all
+  become: yes
+  become_user: "{{ devel_user }}"
+
+  tasks:
+    - name: Copy tilt-settings.yaml to cluster-api directory
+      ansible.builtin.copy:
+        src: files/tilt-settings.yaml
+        dest: "$HOME/cluster-api/tilt-settings.yaml"
+        owner: "{{ devel_user }}"
+        group: "{{ devel_user }}"
+        mode: "0644"
+
