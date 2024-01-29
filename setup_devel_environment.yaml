@@ -43,6 +43,11 @@
         name: docker.io
         state: present
 
+    - name: Install docker buildkit support from apt
+      ansible.builtin.apt:
+        name: docker-buildx
+        state: present
+
     - name: Add "{{ devel_user }}" to docker group
       ansible.builtin.user:
         name: "{{ devel_user }}"
